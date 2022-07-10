@@ -4,6 +4,20 @@ from torch import nn
 import einops
 
 
+class LayerNormChannel(nn.Module):
+    def __init__(self, in_channels, eps=1e-5):
+        super().__init__()
+        self.eps = eps
+        self.g = nn.Parameter(torch.ones(1, in_channels, 1, 1))
+        self.b = nn.Parameter(torch.zeros(1, in_channels, 1, 1))
+
+    def forward(self, x):
+        var = torch.var(x, dim=1, unbiased=False, keepdim=True)
+        m = torch.mean(x, dim=1, keepdim=True)
+        normalized = (x - m) / (var + self.eps).sqrt() * self.g + self.b
+        return normalized
+
+
 class BaseConvQKVAttention(nn.Module):
     """
     Input x with 4 dimensions: (batch_size, n_channels, height, width);
@@ -32,7 +46,7 @@ class BaseConvQKVAttention(nn.Module):
             kernel_size=1,
         )
         if add_layernorm:
-            self.attn_conv = nn.Sequential(attn_conv, nn.LayerNorm(in_channels))
+            self.attn_conv = nn.Sequential(attn_conv, LayerNormChannel(in_channels))
         else:
             self.attn_conv = attn_conv
 
@@ -106,7 +120,7 @@ class LinearConvQKVAttention(BaseConvQKVAttention):
         head_dim: Optional[int] = 32,
         add_layernorm: Optional[bool] = True,
     ):
-        super(ClassicConvQKVAttention, self).__init__(
+        super(LinearConvQKVAttention, self).__init__(
             in_channels, n_heads, head_dim, add_layernorm
         )
 
