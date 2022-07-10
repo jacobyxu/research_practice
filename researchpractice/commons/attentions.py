@@ -105,11 +105,13 @@ class ClassicConvQKVAttention(BaseConvQKVAttention):
         return self.attn_conv(attn)
 
 
-class LinearConvQKVAttention(BaseConvQKVAttention):
+class EfficientConvQKVAttention(BaseConvQKVAttention):
     """
-    Linear Attention, introduced by [Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention].
+    Efficient Linear Attention, introduced by [Efficient Attention: Attention with Linear Complexities].
+    And More generic formulation is introduced by [Transformers are RNNs:Fast Autoregressive Transformers with Linear Attention].
 
     refer to:
+    https://github.com/cmsflash/efficient-attention/blob/master/efficient_attention.py
     https://github.com/lucidrains/denoising-diffusion-pytorch/blob/master/denoising_diffusion_pytorch/denoising_diffusion_pytorch.py#L184
     """
 
@@ -120,15 +122,15 @@ class LinearConvQKVAttention(BaseConvQKVAttention):
         head_dim: Optional[int] = 32,
         add_layernorm: Optional[bool] = True,
     ):
-        super(LinearConvQKVAttention, self).__init__(
+        super(EfficientConvQKVAttention, self).__init__(
             in_channels, n_heads, head_dim, add_layernorm
         )
 
     def forward(self, x):
         """Linear Attention.
 
-        Attention(Q,K,V) = softmax(Q) * ((softmax(K^T) * V)  / sqrt(d_k))
-        Paper: https://arxiv.org/pdf/2006.16236.pdf
+        Attention(Q,K,V) = softmax(Q) * ((softmax(K^T) * V) / sqrt(d_k))
+        Paper: https://arxiv.org/pdf/1812.01243.pdf
         """
         n, c, h, w = x.shape
         q, k, v = self.split_qkv(x)
