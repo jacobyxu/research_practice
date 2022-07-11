@@ -5,8 +5,12 @@ import einops
 
 
 class LayerNormChannel(nn.Module):
-    def __init__(self, in_channels, eps=1e-5):
-        super().__init__()
+    def __init__(
+        self,
+        in_channels: int,
+        eps: Optional[float] = 1e-5,
+    ):
+        super(LayerNormChannel, self).__init__()
         self.eps = eps
         self.g = nn.Parameter(torch.ones(1, in_channels, 1, 1))
         self.b = nn.Parameter(torch.zeros(1, in_channels, 1, 1))
@@ -21,7 +25,7 @@ class LayerNormChannel(nn.Module):
 class BaseConvQKVAttention(nn.Module):
     """
     Input x with 4 dimensions: (batch_size, n_channels, height, width);
-    Output the same 4 dimensions as Input.
+    Output 4 dimensions (1, n_channels, height, width).
     """
 
     def __init__(
