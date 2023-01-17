@@ -3,6 +3,27 @@ import torch
 from torch import nn
 
 
+class SinusoidalPosEmb(nn.Module):
+    """Build Normal sinusoidal embeddings.
+
+    Specially used for additional input e.g. timestep in diffusion model.
+    """
+
+    def __init__(self, dim):
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, time):
+        device = time.device
+        half_dim = self.dim // 2
+        embeddings = math.log(10000) / (half_dim - 1)
+        embeddings = torch.exp(torch.arange(
+            half_dim, device=device) * -embeddings)
+        embeddings = time[:, None] * embeddings[None, :]
+        embeddings = torch.cat((embeddings.sin(), embeddings.cos()), dim=-1)
+        return embeddings
+
+
 class SinusoidalConvPosEmb(nn.Module):
     """Build Conv sinusoidal embeddings.
 
@@ -25,7 +46,8 @@ class SinusoidalConvPosEmb(nn.Module):
     def forward(self, x):
         n, c, h, w = x.shape
         sinusoidal_pe = SinusoidalConvPosEmb.get_pe(c, h * w)
-        sinusoidal_pe = sinusoidal_pe.reshape(c, h, w).unsqueeze(0).repeat(n, 1, 1, 1)
+        sinusoidal_pe = sinusoidal_pe.reshape(
+            c, h, w).unsqueeze(0).repeat(n, 1, 1, 1)
         return sinusoidal_pe
 
     @staticmethod
@@ -53,5 +75,6 @@ class SinusoidalConvPosEmb(nn.Module):
         )  # [n_pos, emb_dim]
         if emb_dim % 2 == 1:
             # zero pad
-            sinusoidal_pe = torch.cat([sinusoidal_pe, torch.zeros(n_pos, 1)], dim=1)
+            sinusoidal_pe = torch.cat(
+                [sinusoidal_pe, torch.zeros(n_pos, 1)], dim=1)
         return sinusoidal_pe

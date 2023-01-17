@@ -5,6 +5,10 @@ The repository is to practice on latest AI Research models using pytorch.
 Brief log:
 
 - Next: Unet
+
+- 2023-01-16: Diffusion Model
+    + [Diffusion models from scratch in PyTorch -- DeepFindr](https://www.youtube.com/watch?v=a4Yfz2FxXiY&list=PLtxskgdT6Ospz1aKFd5SOOAFHWoOg8DUV&index=7&t=319s)
+
 - 2022-07-10: Sinusoidal Position Embeddings on CNN
     + [Attention Is All You Need](https://arxiv.org/pdf/1706.03762.pdf)
     + [Positional embeddings in transformers EXPLAINED | Demystifying positional encodings](https://www.youtube.com/watch?v=1biZfFLPRSY)

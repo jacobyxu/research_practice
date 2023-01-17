@@ -1,8 +1,11 @@
-from researchpractice.commons import ClassicConvQKVAttention, EfficientConvQKVAttention
 import torch
+import sys
+import os
+sys.path.append(os.getcwd())
 
 
 def test_ClassicConvQKVAttention():
+    from researchpractice.commons import ClassicConvQKVAttention
     x = torch.randn(1, 36, 64, 64)
     model = ClassicConvQKVAttention(in_channels=36)
     y = model(x)
@@ -11,6 +14,7 @@ def test_ClassicConvQKVAttention():
 
 
 def test_LinearConvQKVAttention():
+    from researchpractice.commons import EfficientConvQKVAttention
     x = torch.randn(1, 36, 64, 64)
     model = EfficientConvQKVAttention(in_channels=36)
     y = model(x)
